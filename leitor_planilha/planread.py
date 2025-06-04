@@ -7,23 +7,23 @@ import plotly.io as pio
 
 # === 1. Conectar ao Google Sheets ===
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('credenciais.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('credenciais.json', scope) #Gerar arquivo credenciais.json no google cloud
 client = gspread.authorize(creds)
 
 # Nome ou ID da planilha
-spreadsheet_id = "1SmbyqTMTH7Nan_e_qwXeHwb68zCjYsj9DkxMEYJHmw0"  # o ID da URL da planilha
+spreadsheet_id = "ID da SpreadSheet aqui"  # o ID da URL da planilha
 sheet = client.open_by_key(spreadsheet_id).sheet1
 
 # === 2. Obter os dados ===
-headers = ['TAREFAS', 'DATA INICIO', 'DATA DE TÉRMINO', 'DURAÇÃO', 'RESPONSÁVEL', 'DESCRIÇÃO']
-data = sheet.get_all_records(expected_headers=headers)
+headers = ['TAREFAS', 'DATA INICIO', 'DATA DE TÉRMINO', 'DURAÇÃO', 'RESPONSÁVEL', 'DESCRIÇÃO'] #colunas esperadas, se estivar utilizando uma tabela diferente é necessário modificar, o mesmo para as informações abaixo
+data = sheet.get_all_records(expected_headers=headers) 
 df = pd.DataFrame(data)
 
 # Mostrar colunas reais
 print(df.columns)
 
 # Converter datas
-df['DATA INICIO'] = pd.to_datetime(df['DATA INICIO'], dayfirst=True)
+df['DATA INICIO'] = pd.to_datetime(df['DATA INICIO'], dayfirst=True) 
 df['DATA DE TÉRMINO'] = pd.to_datetime(df['DATA DE TÉRMINO'], dayfirst=True)
 
 # Criar uma coluna que une tarefa + responsável para tooltip

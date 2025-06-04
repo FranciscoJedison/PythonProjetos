@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Chatbot Gemini</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #ece9e6, #ffffff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #chat-container {
+      width: 100%;
+      max-width: 700px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #chat-header {
+      background: #4a90e2;
+      color: white;
+      padding: 20px;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    #mensagens {
+      padding: 20px;
+      height: 400px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background-color: #f7f9fc;
+    }
+
+    .mensagem {
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .user {
+      align-self: flex-end;
+      background-color: #e1f5fe;
+      color: #0277bd;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    #input-container {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+
+    #mensagemInput {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+    }
+
+    #enviarBtn {
+      padding: 0 20px;
+      border: none;
+      background: #4a90e2;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #enviarBtn:hover {
+      background: #357ab8;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="chat-header">Chatbot Gemini</div>
+    <div id="mensagens"></div>
+    <div id="input-container">
+      <input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." />
+      <button id="enviarBtn" onclick="enviarMensagem()">Enviar</button>
+    </div>
+  </div>
+
+  <script>
+    function adicionarMensagem(texto, classe) {
+      const msg = document.createElement("div");
+      msg.className = "mensagem " + classe;
+      msg.textContent = texto;
+      document.getElementById("mensagens").appendChild(msg);
+      document.getElementById("mensagens").scrollTop = document.getElementById("mensagens").scrollHeight;
+    }
+
+    function enviarMensagem() {
+      const input = document.getElementById("mensagemInput");
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      adicionarMensagem("Você: " + texto, "user");
+      input.value = "";
+
+      fetch("/perguntar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mensagem: texto })
+      })
+      .then(response => response.json())
+      .then(data => {
+        adicionarMensagem("Bot: " + data.resposta, "bot");
+      })
+      .catch(() => {
+        adicionarMensagem("Bot: Erro ao se comunicar com o servidor.", "bot");
+      });
+    }
+
+    // Enviar com Enter
+    document.getElementById("mensagemInput").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        enviarMensagem();
+      }
+    });
+  </script>
+</body>
+</html>

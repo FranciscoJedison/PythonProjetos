@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html") 
 
 def to_markdown(text):
   text = text.replace('•', '  *')
@@ -30,7 +30,7 @@ def perguntar():
 
     try:
         response = model.generate_content(pergunta, stream=True)
-        to_markdown(response.resolve())
+        (response.resolve())
         return jsonify({"resposta": response.text})
     except Exception as e:
         return jsonify({"resposta": f"Ocorreu um erro: {str(e)}"})
